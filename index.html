@@ -5,12 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hey Intan 💖</title>
 
-<script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
-
 <style>
+/* =====================
+   BASE
+===================== */
 *{
   box-sizing:border-box;
-  font-family:'Segoe UI',system-ui,sans-serif
+  font-family:'Segoe UI',system-ui,sans-serif;
 }
 body{
   margin:0;
@@ -20,19 +21,48 @@ body{
   align-items:center;
   justify-content:center;
   padding:20px;
+  overflow:hidden;
 }
+
+/* =====================
+   SCREEN SYSTEM
+===================== */
 .screen{
-  background:#fff;
+  position:absolute;
   width:100%;
   max-width:420px;
+  background:#fff;
   border-radius:26px;
   padding:28px;
   text-align:center;
   box-shadow:0 30px 60px rgba(0,0,0,.18);
-  display:none;
+
+  opacity:0;
+  transform:translateY(40px) scale(0.96);
+  pointer-events:none;
+
+  transition:
+    opacity .6s cubic-bezier(.22,1,.36,1),
+    transform .6s cubic-bezier(.22,1,.36,1);
 }
+.screen.active{
+  opacity:1;
+  transform:translateY(0) scale(1);
+  pointer-events:auto;
+}
+
+/* =====================
+   TEXT
+===================== */
 h1,h2{margin-top:0}
-p{line-height:1.7;font-size:16px}
+p{
+  line-height:1.7;
+  font-size:16px;
+}
+
+/* =====================
+   BUTTONS
+===================== */
 button{
   background:#ff5e7e;
   border:none;
@@ -42,18 +72,29 @@ button{
   border-radius:16px;
   cursor:pointer;
   margin-top:18px;
+  transition:transform .15s ease;
 }
-button:active{transform:scale(.96)}
+button:active{
+  transform:scale(.96);
+}
 .game-btn{
   display:block;
   width:100%;
   margin:10px 0;
 }
+
+/* =====================
+   PROGRESS
+===================== */
 .progress{
   font-size:14px;
   color:#aaa;
   margin-bottom:8px;
 }
+
+/* =====================
+   MUSIC BUTTON
+===================== */
 .music-btn{
   position:fixed;
   bottom:20px;
@@ -66,6 +107,10 @@ button:active{transform:scale(.96)}
   cursor:pointer;
   display:none;
 }
+
+/* =====================
+   HEARTS
+===================== */
 .hearts{
   position:fixed;
   inset:0;
@@ -75,6 +120,11 @@ button:active{transform:scale(.96)}
   position:absolute;
   bottom:-20px;
   font-size:22px;
+  animation:floatUp 6s linear forwards;
+}
+@keyframes floatUp{
+  from{transform:translateY(0);opacity:1}
+  to{transform:translateY(-110vh);opacity:0}
 }
 </style>
 </head>
@@ -88,14 +138,14 @@ button:active{transform:scale(.96)}
 <div class="music-btn" id="musicBtn" onclick="toggleMusic()">🔊 Pause</div>
 
 <!-- SCREEN 1 -->
-<div class="screen" id="s1">
+<div class="screen active" id="s1">
   <p>14 Februari 2025</p>
   <h1>Hey Intan 💖</h1>
   <p>Aku bikin sesuatu buat kamu.</p>
   <button onclick="go(2)">Tap to start</button>
 </div>
 
-<!-- SCREEN 2 GAME -->
+<!-- SCREEN 2 -->
 <div class="screen" id="s2">
   <h2>Main dulu yuk 🎮</h2>
   <p>Klik semua tombol di bawah ini 😉</p>
@@ -155,7 +205,7 @@ button:active{transform:scale(.96)}
   <button onclick="go(8)">Satu lagi… 💌</button>
 </div>
 
-<!-- ENDING -->
+<!-- END -->
 <div class="screen" id="s8">
   <h2>Happy Valentine’s Day 💘</h2>
   <p>Makasih udah jadi bagian terbaik<br>dari hari-hari aku, <b>Intan</b>.</p>
@@ -165,97 +215,55 @@ button:active{transform:scale(.96)}
 <div class="hearts" id="hearts"></div>
 
 <script>
-let current = null;
+let current = document.getElementById('s1');
 let clicked = 0;
 
 const music = document.getElementById('music');
 const musicBtn = document.getElementById('musicBtn');
 
 function go(n){
-  if(current){
-    gsap.to(current,{
-      opacity:0,
-      y:-20,
-      scale:0.98,
-      duration:0.3,
-      ease:"power2.in",
-      onComplete:()=>current.style.display="none"
-    });
-  }
+  current.classList.remove('active');
+  const next = document.getElementById('s'+n);
+  next.classList.add('active');
+  current = next;
 
-  const el = document.getElementById('s'+n);
-  el.style.display="block";
-
-  gsap.fromTo(el,
-    {opacity:0,y:30,scale:0.97},
-    {opacity:1,y:0,scale:1,duration:0.6,ease:"power3.out"}
-  );
-
-  const items = el.querySelectorAll("h1,h2,p,button");
-  gsap.from(items,{
-    opacity:0,
-    y:16,
-    stagger:0.12,
-    duration:0.45,
-    delay:0.15
-  });
-
-  current = el;
-
-  if(n===2){
+  if(n === 2){
     music.play().catch(()=>{});
-    musicBtn.style.display="block";
+    musicBtn.style.display = 'block';
   }
 }
 
 function reveal(btn,text){
   if(btn.dataset.done) return;
-  btn.dataset.done=true;
-
-  gsap.fromTo(btn,
-    {scale:1},
-    {scale:1.06,duration:0.12,yoyo:true,repeat:1}
-  );
-
-  btn.innerText=text;
-  btn.style.opacity="0.75";
+  btn.dataset.done = true;
+  btn.innerText = text;
+  btn.style.opacity = .75;
 
   clicked++;
-  if(clicked===4){
-    const next=document.getElementById("gameNext");
-    next.style.display="block";
-    gsap.fromTo(next,
-      {opacity:0,scale:0.95},
-      {opacity:1,scale:1,duration:0.4,ease:"back.out(1.4)"}
-    );
+  if(clicked === 4){
+    document.getElementById('gameNext').style.display = 'block';
   }
 }
 
 function toggleMusic(){
   if(music.paused){
     music.play();
-    musicBtn.innerText="🔊 Pause";
+    musicBtn.innerText = '🔊 Pause';
   }else{
     music.pause();
-    musicBtn.innerText="🔇 Play";
+    musicBtn.innerText = '🔇 Play';
   }
 }
 
-const hearts=document.getElementById("hearts");
+const hearts = document.getElementById('hearts');
 setInterval(()=>{
-  const h=document.createElement("div");
-  h.className="heart";
-  h.innerText="💖";
-  h.style.left=Math.random()*100+"vw";
+  const h = document.createElement('div');
+  h.className = 'heart';
+  h.innerText = '💖';
+  h.style.left = Math.random()*100 + 'vw';
   hearts.appendChild(h);
-
-  gsap.fromTo(h,
-    {y:0,opacity:1},
-    {y:-window.innerHeight-100,opacity:0,duration:6,onComplete:()=>h.remove()}
-  );
+  setTimeout(()=>h.remove(),6000);
 },450);
-
-go(1);
 </script>
 
 </body>
