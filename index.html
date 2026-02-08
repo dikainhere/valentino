@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hey Intan 💖</title>
+
+<script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
+
+<style>
+*{box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif}
+body{
+  margin:0;min-height:100vh;
+  background:linear-gradient(135deg,#ff9a9e,#fad0c4);
+  display:flex;align-items:center;justify-content:center;
+}
+.screen{
+  background:#fff;
+  width:100%;max-width:420px;
+  border-radius:26px;
+  padding:28px;
+  text-align:center;
+  box-shadow:0 35px 70px rgba(0,0,0,.18);
+  display:none;
+}
+h1,h2{margin:0 0 10px}
+p{line-height:1.7;font-size:16px;margin:10px 0}
+button{
+  background:#ff5e7e;color:#fff;
+  border:none;border-radius:16px;
+  padding:14px 22px;font-size:16px;
+  margin-top:20px;cursor:pointer;
+}
+button:active{transform:scale(.96)}
+.game-btn{display:block;width:100%;margin:12px 0}
+.progress{font-size:14px;color:#aaa;margin-bottom:10px}
+.music-btn{
+  position:fixed;bottom:20px;right:20px;
+  background:#fff;border-radius:50px;
+  padding:10px 16px;
+  box-shadow:0 12px 30px rgba(0,0,0,.25);
+  font-size:14px;cursor:pointer;
+  display:none;
+}
+.hearts{position:fixed;inset:0;pointer-events:none}
+.heart{position:absolute;bottom:-20px;font-size:22px}
+</style>
+</head>
+
+<body>
+
+<audio id="music">
+  <source src="lagu.mp3" type="audio/mpeg">
+</audio>
+
+<div class="music-btn" id="musicBtn" onclick="toggleMusic()">🔊 Pause</div>
+
+<div class="screen" id="s1">
+  <p>14 Februari 2025</p>
+  <h1>Hey Intan 💖</h1>
+  <p>Aku bikin sesuatu buat kamu.</p>
+  <button onclick="go(2)">Tap to start</button>
+</div>
+
+<div class="screen" id="s2">
+  <h2>Main dulu yuk 🎮</h2>
+  <p>Klik semua tombol di bawah ini 😉</p>
+
+  <button class="game-btn" onclick="reveal(this,'Aku juga kangen kamu 🥺💗')">
+    😢 Klik kalau kamu kangen aku
+  </button>
+  <button class="game-btn" onclick="reveal(this,'Tuh kan… aku tau 😆❤️')">
+    😉 Jangan klik ini
+  </button>
+  <button class="game-btn" onclick="reveal(this,'Senyum kamu bikin hari aku ringan ☀️')">
+    😊 Klik kalau kamu lagi senyum
+  </button>
+  <button class="game-btn" onclick="reveal(this,'*peluk virtual* 🤍')">
+    🤗 Mau peluk virtual gak?
+  </button>
+
+  <button id="gameNext" style="display:none" onclick="go(3)">Lanjut yuk →</button>
+</div>
+
+<div class="screen" id="s3">
+  <div class="progress">●○○○○</div>
+  <p>Soal jarak…</p>
+  <p>Ada hari-hari pengen ketemu,<br>tapi cuma bisa chatingan lebih lama.</p>
+  <button onclick="go(4)">Next →</button>
+</div>
+
+<div class="screen" id="s4">
+  <div class="progress">●●○○○</div>
+  <p>Kadang aku kesel juga.</p>
+  <p>Bukan karena kamu,<br>tapi pengen lebih dekat aja.</p>
+  <button onclick="go(5)">Next →</button>
+</div>
+
+<div class="screen" id="s5">
+  <div class="progress">●●●○○</div>
+  <p>Tapi kamu selalu punya cara…</p>
+  <p>Perhatian kecil kamu cukup bikin aku tenang.</p>
+  <button onclick="go(6)">Next →</button>
+</div>
+
+<div class="screen" id="s6">
+  <div class="progress">●●●●○</div>
+  <p>Aku mau kamu tau —</p>
+  <p><b>Aku bersyukur banget punya kamu.</b></p>
+  <button onclick="go(7)">Next →</button>
+</div>
+
+<div class="screen" id="s7">
+  <div class="progress">●●●●●</div>
+  <p>Walau lewat layar,<br>setiap hari bareng kamu berarti.</p>
+  <button onclick="go(8)">Satu lagi… 💌</button>
+</div>
+
+<div class="screen" id="s8">
+  <h2>Happy Valentine’s Day 💘</h2>
+  <p>Makasih udah jadi bagian terbaik<br>dari hari-hari aku, <b>Intan</b>.</p>
+  <p><i>I love you 🤍</i></p>
+</div>
+
+<div class="hearts" id="hearts"></div>
+
+<script>
+let current=null, clicked=0;
+const music=document.getElementById('music');
+const musicBtn=document.getElementById('musicBtn');
+
+function animateIn(el){
+  const items=el.querySelectorAll('h1,h2,p,button');
+  gsap.fromTo(el,{opacity:0,scale:.96,y:30},
+    {opacity:1,scale:1,y:0,duration:.7,ease:"expo.out"});
+  gsap.from(items,{opacity:0,y:20,stagger:.15,duration:.6,delay:.2});
+}
+
+function go(n){
+  if(current){
+    gsap.to(current,{opacity:0,scale:.96,y:-20,duration:.3,
+      onComplete:()=>current.style.display='none'});
+  }
+  const el=document.getElementById('s'+n);
+  el.style.display='block';
+  animateIn(el);
+  current=el;
+
+  if(n===2){
+    music.play();
+    musicBtn.style.display='block';
+  }
+}
+
+function reveal(btn,text){
+  if(btn.dataset.done) return;
+  btn.dataset.done=true;
+  gsap.to(btn,{scale:1.05,duration:.15,yoyo:true,repeat:1});
+  btn.innerText=text;
+  btn.style.opacity=.7;
+  clicked++;
+  if(clicked===4)
+    document.getElementById('gameNext').style.display='block';
+}
+
+function toggleMusic(){
+  if(music.paused){
+    music.play();musicBtn.innerText='🔊 Pause';
+  }else{
+    music.pause();musicBtn.innerText='🔇 Play';
+  }
+}
+
+go(1);
+
+// hearts
+const hearts=document.getElementById('hearts');
+setInterval(()=>{
+  const h=document.createElement('div');
+  h.className='heart';
+  h.innerText='💖';
+  h.style.left=Math.random()*100+'vw';
+  hearts.appendChild(h);
+  gsap.fromTo(h,{y:0,opacity:1},
+    {y:-window.innerHeight-100,opacity:0,duration:6,onComplete:()=>h.remove()});
+},450);
+</script>
+
+</body>
+</html>
